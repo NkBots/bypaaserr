@@ -127,108 +127,13 @@ def scrapeIndex(url, username="none", password="none"):
 
 
 ##############################################################
-# tnlink
-
-def tnlink(url):
-    client = requests.session()
-    DOMAIN = "https://internet.usanewstoday.club"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://usanewstoday.club/"
-    h = {"referer": ref}
-    while len(client.cookies) == 0:
-        resp = client.get(final_url,headers=h)
-        time.sleep(2)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(8)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
+# 
 
 
 ###############################################################
-# psa 
-
-def try2link_bypass(url):
-	client = cloudscraper.create_scraper(allow_brotli=False)
-	
-	url = url[:-1] if url[-1] == '/' else url
-	
-	params = (('d', int(time.time()) + (60 * 4)),)
-	r = client.get(url, params=params, headers= {'Referer': 'https://newforex.online/'})
-	
-	soup = BeautifulSoup(r.text, 'html.parser')
-	inputs = soup.find(id="go-link").find_all(name="input")
-	data = { input.get('name'): input.get('value') for input in inputs }	
-	time.sleep(7)
-	
-	headers = {'Host': 'try2link.com', 'X-Requested-With': 'XMLHttpRequest', 'Origin': 'https://try2link.com', 'Referer': url}
-	
-	bypassed_url = client.post('https://try2link.com/links/go', headers=headers,data=data)
-	return bypassed_url.json()["url"]
-		
-
-def try2link_scrape(url):
-	client = cloudscraper.create_scraper(allow_brotli=False)	
-	h = {
-	'upgrade-insecure-requests': '1', 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
-	}
-	res = client.get(url, cookies={}, headers=h)
-	url = 'https://try2link.com/'+re.findall('try2link\.com\/(.*?) ', res.text)[0]
-	return try2link_bypass(url)
-    
-
-def psa_bypasser(psa_url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    r = client.get(psa_url)
-    soup = BeautifulSoup(r.text, "html.parser").find_all(class_="dropshadowboxes-drop-shadow dropshadowboxes-rounded-corners dropshadowboxes-inside-and-outside-shadow dropshadowboxes-lifted-both dropshadowboxes-effect-default")
-    links = ""
-    for link in soup:
-        try:
-            exit_gate = link.a.get("href")
-            links = links + try2link_scrape(exit_gate) + '\n'
-        except: pass
-    return links
-
-
+# 
 ##################################################################################################################
-# rocklinks
-
-def rocklinks(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    if 'rocklinks.net' in url:
-        DOMAIN = "https://blog.disheye.com"
-    else:
-        DOMAIN = "https://rocklinks.net"
-
-    url = url[:-1] if url[-1] == '/' else url
-
-    code = url.split("/")[-1]
-    if 'rocklinks.net' in url:
-        final_url = f"{DOMAIN}/{code}?quelle=" 
-    else:
-        final_url = f"{DOMAIN}/{code}"
-
-    resp = client.get(final_url)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    
-    try: inputs = soup.find(id="go-link").find_all(name="input")
-    except: return "Incorrect Link"
-    
-    data = { input.get('name'): input.get('value') for input in inputs }
-
-    h = { "x-requested-with": "XMLHttpRequest" }
-    
-    time.sleep(10)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return r.json()['url']
-    except: return "Something went wrong :("
-
+# 
 
 ###############################################################
 # htpmovies cinevood sharespark atishmkv
@@ -452,22 +357,7 @@ def getfirst(url):
 
 
 ####################################################################################################
-# ez4short
-
-def ez4(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://ez4short.com"
-    ref = "https://techmody.io/"
-    h = {"referer": ref}
-    resp = client.get(url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(8)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
+# 
 
 
 
@@ -565,47 +455,9 @@ def kolop_dl(url,kcrypt):
 
 
 ############################################################
-# sirigan  ( unused )
-
-def siriganbypass(url):
-    client = requests.Session()
-    res = client.get(url)
-    url = res.url.split('=', maxsplit=1)[-1]
-
-    while True:
-        try: url = base64.b64decode(url).decode('utf-8')
-        except: break
-
-    return url.split('url=')[-1]
 
 
 ############################################################
-# shorte
-
-def sh_st_bypass(url):    
-    client = requests.Session()
-    client.headers.update({'referer': url})
-    p = urlparse(url)
-    
-    res = client.get(url)
-
-    sess_id = re.findall('''sessionId(?:\s+)?:(?:\s+)?['|"](.*?)['|"]''', res.text)[0]
-    
-    final_url = f"{p.scheme}://{p.netloc}/shortest-url/end-adsession"
-    params = {
-        'adSessionId': sess_id,
-        'callback': '_'
-    }
-    time.sleep(5) # !important
-    
-    res = client.get(final_url, params=params)
-    dest_url = re.findall('"(.*?)"', res.text)[1].replace('\/','/')
-    
-    return {
-        'src': url,
-        'dst': dest_url
-    }['dst']
-
 
 #############################################################
 # gofile
@@ -635,52 +487,6 @@ def gofile_dl(url,password=""):
 
 
 ################################################################
-# sharer pw
-
-def parse_info_sharer(res):
-    f = re.findall(">(.*?)<\/td>", res.text)
-    info_parsed = {}
-    for i in range(0, len(f), 3):
-        info_parsed[f[i].lower().replace(' ', '_')] = f[i+2]
-    return info_parsed
-
-def sharer_pw(url,Laravel_Session, XSRF_TOKEN, forced_login=False):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    client.cookies.update({
-        "XSRF-TOKEN": XSRF_TOKEN,
-        "laravel_session": Laravel_Session
-    })
-    res = client.get(url)
-    token = re.findall("_token\s=\s'(.*?)'", res.text, re.DOTALL)[0]
-    ddl_btn = etree.HTML(res.content).xpath("//button[@id='btndirect']")
-    info_parsed = parse_info_sharer(res)
-    info_parsed['error'] = True
-    info_parsed['src_url'] = url
-    info_parsed['link_type'] = 'login'
-    info_parsed['forced_login'] = forced_login
-    headers = {
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'x-requested-with': 'XMLHttpRequest'
-    }
-    data = {
-        '_token': token
-    }
-    if len(ddl_btn):
-        info_parsed['link_type'] = 'direct'
-    if not forced_login:
-        data['nl'] = 1
-    try: 
-        res = client.post(url+'/dl', headers=headers, data=data).json()
-    except:
-        return info_parsed
-    if 'url' in res and res['url']:
-        info_parsed['error'] = False
-        info_parsed['gdrive_link'] = res['url']
-    if len(ddl_btn) and not forced_login and not 'url' in info_parsed:
-        # retry download via login
-        return sharer_pw(url,Laravel_Session, XSRF_TOKEN, forced_login=True)
-    return info_parsed["gdrive_link"]
-
 
 #################################################################
 # gdtot
@@ -856,211 +662,7 @@ def unified(url):
 
 
 #####################################################################################################
-# urls open
-
-def urlsopen(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://blogpost.viewboonposts.com/ssssssagasdgeardggaegaqe"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://blog.textpage.xyz/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(2)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-    
-
 ####################################################################################################
-# URLShortX - xpshort
-
-def xpshort(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://xpshort.com"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://www.jankarihoga.com/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(8)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-
-#####################################################################################################
-# dulink
-
-def dulink(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://du-link.in"
-    url = url[:-1] if url[-1] == '/' else url
-    ref = "https://profitshort.com/"
-    h = {"referer": ref}
-    resp = client.get(url, headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-#####################################################################################################
-# krownlinks
-
-def krownlinks(url):
-    client = requests.session()
-    DOMAIN = "https://tech.bloggertheme.xyz"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    resp = client.get(final_url)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    try: inputs = soup.find(id="go-link").find_all(name="input")
-    except: return "Incorrect Link"
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(10)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-
-####################################################################################################
-# adrinolink
-
-def adrinolink (url):
-    if "https://adrinolinks.in/" not in url: url = "https://adrinolinks.in/" + url.split("/")[-1]
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://adrinolinks.in"
-    ref = "https://amritadrino.com/"
-    h = {"referer": ref}
-    resp = client.get(url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(8)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-
-#####################################################################################################
-# mdiskshortners
-
-def mdiskshortners(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://mdiskshortners.in/"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://www.adzz.in/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(2)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-
-##################################################################################################### 
-# tinyfy
-
-def tiny(url):
-    client = requests.session()
-    DOMAIN = "https://tinyfy.in"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://www.yotrickslog.tech/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try: return r.json()['url']
-    except: return "Something went wrong :("
-
-
-##################################################################################################### 
-# earnl
-
-def earnl(url):
-    client = requests.session()
-    DOMAIN = "https://v.earnl.xyz"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://link.modmakers.xyz/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(5)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return r.json()['url']
-    except: return "Something went wrong :("
-
-
-##################################################################################################### 
-# moneykamalo
-
-def moneykamalo(url):
-    client = requests.session()
-    DOMAIN = "https://go.moneykamalo.com"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://techkeshri.com/"
-    h = {"referer": ref}
-    resp = client.get(final_url,headers=h)
-    soup = BeautifulSoup(resp.content, "html.parser")
-    inputs = soup.find_all("input")
-    data = { input.get('name'): input.get('value') for input in inputs }
-    h = { "x-requested-with": "XMLHttpRequest" }
-    time.sleep(5)
-    r = client.post(f"{DOMAIN}/links/go", data=data, headers=h)
-    try:
-        return r.json()['url']
-    except: return "Something went wrong :("
-
-
-##################################################################################################### 
-# easysky
-
-def easysky(url):
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    DOMAIN = "https://techy.veganab.co/"
-    url = url[:-1] if url[-1] == '/' else url
-    code = url.split("/")[-1]
-    final_url = f"{DOMAIN}/{code}"
-    ref = "https://veganab.co/"
-
-
-##################################################################################################### 
-################################################################## 
 # helpers
 
 # check if present in list
