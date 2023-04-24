@@ -23,10 +23,9 @@ import ddl
 GDTot_Crypt = os.environ.get("CRYPT","b0lDek5LSCt6ZjVRR2EwZnY4T1EvVndqeDRtbCtTWmMwcGNuKy8wYWpDaz0%3D")
 Laravel_Session = os.environ.get("Laravel_Session","")
 XSRF_TOKEN = os.environ.get("XSRF_TOKEN","")
-DCRYPT = os.environ.get("DRIVEFIRE_CRYPT","")
 KCRYPT = os.environ.get("KOLOP_CRYPT","aWFicnVaNWh4TThRbzFqdkE2U2FKNmJOTWhvWkZmbWswaUFadTB5NXJ3RT0%3D")
 HCRYPT = os.environ.get("HUBDRIVE_CRYPT","Q29hdlpLUEZTSEJLUjVZRkZQSExLODFuWGVudUlNK0ZPZlZmS1hENWxZVT0%3D")
-KATCRYPT = os.environ.get("KATDRIVE_CRYPT","")
+
 
 
 ############################################################
@@ -229,100 +228,6 @@ def rocklinks(url):
     try:
         return r.json()['url']
     except: return "Something went wrong :("
-
-
-################################################
-# igg games
-
-def decodeKey(encoded):
-        key = ''
-
-        i = len(encoded) // 2 - 5
-        while i >= 0:
-            key += encoded[i]
-            i = i - 2
-        
-        i = len(encoded) // 2 + 4
-        while i < len(encoded):
-            key += encoded[i]
-            i = i + 2
-
-        return key
-
-def bypassBluemediafiles(url, torrent=False):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Alt-Used': 'bluemediafiles.com',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-
-    }
-
-    res = requests.get(url, headers=headers)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    script = str(soup.findAll('script')[3])
-    encodedKey = script.split('Create_Button("')[1].split('");')[0]
-
-
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': url,
-        'Alt-Used': 'bluemediafiles.com',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-    }
-
-    params = { 'url': decodeKey(encodedKey) }
-    
-    if torrent:
-        res = requests.get('https://dl.pcgamestorrents.org/get-url.php', params=params, headers=headers)
-        soup = BeautifulSoup(res.text,"html.parser")
-        furl = soup.find("a",class_="button").get("href")
-
-    else:
-        res = requests.get('https://bluemediafiles.com/get-url.php', params=params, headers=headers)
-        furl = res.url
-        if "mega.nz" in furl:
-            furl = furl.replace("mega.nz/%23!","mega.nz/file/").replace("!","#")
-
-    #print(furl)
-    return furl
-
-def igggames(url):
-    res = requests.get(url)
-    soup = BeautifulSoup(res.text,"html.parser")
-    soup = soup.find("div",class_="uk-margin-medium-top").findAll("a")
-
-    bluelist = []
-    for ele in soup:
-        bluelist.append(ele.get('href'))
-    bluelist = bluelist[6:-1]
-
-    links = ""
-    for ele in bluelist:
-        if "bluemediafiles" in ele:
-            links = links + bypassBluemediafiles(ele) + "\n"
-        elif "pcgamestorrents.com" in ele:
-            res = requests.get(ele)
-            soup = BeautifulSoup(res.text,"html.parser")
-            turl = soup.find("p",class_="uk-card uk-card-body uk-card-default uk-card-hover").find("a").get("href")
-            links = links + bypassBluemediafiles(turl,True) + "\n"
-        else:
-            links = links + ele + "\n"
-
-    return links[:-1]
 
 
 ###############################################################
@@ -599,114 +504,6 @@ def ez4(url):
     except: return "Something went wrong :("
 
 
-################################################
-# ola movies
-
-def olamovies(url):
-    
-    print("this takes time, you might want to take a break.")
-    headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:103.0) Gecko/20100101 Firefox/103.0',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Referer': url,
-            'Alt-Used': 'olamovies.ink',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'same-origin',
-            'Sec-Fetch-User': '?1',
-        }
-
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    res = client.get(url)
-    soup = BeautifulSoup(res.text,"html.parser")
-    soup = soup.findAll("div", class_="wp-block-button")
-
-    outlist = []
-    for ele in soup:
-        outlist.append(ele.find("a").get("href"))
-
-    slist = []
-    for ele in outlist:
-        try:
-            key = ele.split("?key=")[1].split("&id=")[0].replace("%2B","+").replace("%3D","=").replace("%2F","/")
-            id = ele.split("&id=")[1]
-        except:
-            continue
-        
-        count = 3
-        params = { 'key': key, 'id': id}
-        soup = "None"
-
-        while 'rocklinks.net' not in soup and "try2link.com" not in soup and "ez4short.com" not in soup:
-            res = client.get("https://olamovies.ink/download/", params=params, headers=headers)
-            soup = BeautifulSoup(res.text,"html.parser")
-            soup = soup.findAll("a")[0].get("href")
-            if soup != "":
-                if "try2link.com" in soup or 'rocklinks.net' in soup or "ez4short.com" in soup: slist.append(soup)
-                else: pass
-            else:
-                if count == 0: break
-                else: count -= 1
-            
-            time.sleep(10)
-
-    final = []
-    for ele in slist:
-        if "rocklinks.net" in ele:
-            final.append(rocklinks(ele))
-        elif "try2link.com" in ele:
-            final.append(try2link_bypass(ele))
-        elif "ez4short.com" in ele:
-            final.append(ez4(ele))
-        else:
-            pass
-
-    links = ""
-    for ele in final:
-        links = links + ele + "\n"
-    return links[:-1]
-
-
-###############################################
-# katdrive
-
-def parse_info_katdrive(res):
-    info_parsed = {}
-    title = re.findall('>(.*?)<\/h4>', res.text)[0]
-    info_chunks = re.findall('>(.*?)<\/td>', res.text)
-    info_parsed['title'] = title
-    for i in range(0, len(info_chunks), 2):
-        info_parsed[info_chunks[i]] = info_chunks[i+1]
-    return info_parsed
-
-def katdrive_dl(url,katcrypt):
-    client = requests.Session()
-    client.cookies.update({'crypt': katcrypt})
-    
-    res = client.get(url)
-    info_parsed = parse_info_katdrive(res)
-    info_parsed['error'] = False
-    
-    up = urlparse(url)
-    req_url = f"{up.scheme}://{up.netloc}/ajax.php?ajax=download"
-    
-    file_id = url.split('/')[-1]
-    data = { 'id': file_id }
-    headers = {'x-requested-with': 'XMLHttpRequest'}
-    
-    try:
-        res = client.post(req_url, headers=headers, data=data).json()['file']
-    except:
-        return "Error"#{'error': True, 'src_url': url}
-    
-    gd_id = re.findall('gd=(.*)', res, re.DOTALL)[0]
-    info_parsed['gdrive_url'] = f"https://drive.google.com/open?id={gd_id}"
-    info_parsed['src_url'] = url
-    return info_parsed['gdrive_url']
-
 
 ###############################################
 # hubdrive
@@ -744,43 +541,6 @@ def hubdrive_dl(url,hcrypt):
     info_parsed['gdrive_url'] = f"https://drive.google.com/open?id={gd_id}"
     info_parsed['src_url'] = url
     return info_parsed['gdrive_url']
-
-
-#################################################
-# drivefire
-
-def parse_info_drivefire(res):
-    info_parsed = {}
-    title = re.findall('>(.*?)<\/h4>', res.text)[0]
-    info_chunks = re.findall('>(.*?)<\/td>', res.text)
-    info_parsed['title'] = title
-    for i in range(0, len(info_chunks), 2):
-        info_parsed[info_chunks[i]] = info_chunks[i+1]
-    return info_parsed
-
-def drivefire_dl(url,dcrypt):
-    client = requests.Session()
-    client.cookies.update({'crypt': dcrypt})
-    
-    res = client.get(url)
-    info_parsed = parse_info_drivefire(res)
-    info_parsed['error'] = False
-    
-    up = urlparse(url)
-    req_url = f"{up.scheme}://{up.netloc}/ajax.php?ajax=download"
-    
-    file_id = url.split('/')[-1]
-    data = { 'id': file_id }
-    headers = {'x-requested-with': 'XMLHttpRequest'}
-    
-    try:
-        res = client.post(req_url, headers=headers, data=data).json()['file']
-    except:
-        return "Error"#{'error': True, 'src_url': url}
-    
-    decoded_id = res.rsplit('/', 1)[-1]
-    info_parsed = f"https://drive.google.com/file/d/{decoded_id}"
-    return info_parsed
 
 
 ##################################################
@@ -1840,24 +1600,9 @@ def ispresent(inlist,url):
 
 # shortners
 def shortners(url):
+   
+        
     
-    # igg games
-    if "https://igg-games.com/" in url:
-        print("entered igg:",url)
-        return igggames(url)
-
-    # ola movies
-    elif "https://olamovies." in url:
-        print("entered ola movies:",url) 
-        return olamovies(url)
-        
-    # katdrive
-    elif "https://katdrive." in url:
-        if KATCRYPT == "":
-            return "🚫 __You can't use this because__ **KATDRIVE_CRYPT** __ENV is not set__"
-        
-        print("entered katdrive:",url)
-        return katdrive_dl(url, KATCRYPT)
 
     # kolop
     elif "https://kolop." in url:
