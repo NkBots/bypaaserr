@@ -462,30 +462,6 @@ def kolop_dl(url,kcrypt):
 #############################################################
 # gofile
 
-def gofile_dl(url,password=""):
-    api_uri = 'https://api.gofile.io'
-    client = requests.Session()
-    res = client.get(api_uri+'/createAccount').json()
-    
-    data = {
-        'contentId': url.split('/')[-1],
-        'token': res['data']['token'],
-        'websiteToken': '12345',
-        'cache': 'true',
-        'password': hashlib.sha256(password.encode('utf-8')).hexdigest()
-    }
-    res = client.get(api_uri+'/getContent', params=data).json()
-
-    content = []
-    for item in res['data']['contents'].values():
-        content.append(item)
-    
-    return {
-        'accountToken': data['token'],
-        'files': content
-    }["files"][0]["link"]
-
-
 ################################################################
 
 #################################################################
