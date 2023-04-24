@@ -540,20 +540,6 @@ def kolop_dl(url,kcrypt):
         res = client.post(req_url, headers=headers, data=data).json()['file']
     except:
 
-##################################################
-# mediafire
-
-def mediafire(url):
-
-    res = requests.get(url, stream=True)
-    contents = res.text
-
-    for line in contents.splitlines():
-        m = re.search(r'href="((http|https)://download[^"]+)', line)
-        if m:
-            return m.groups()[0]
-
-
 ####################################################
 # zippyshare
 
