@@ -541,17 +541,7 @@ def kolop_dl(url,kcrypt):
     except:
 
 ####################################################
-# zippyshare
 
-def zippyshare(url):
-    resp = requests.get(url).text
-    surl = resp.split("document.getElementById('dlbutton').href = ")[1].split(";")[0]
-    parts = surl.split("(")[1].split(")")[0].split(" ")
-    val = str(int(parts[0]) % int(parts[2]) + int(parts[4]) % int(parts[6]))
-    surl = surl.split('"')
-    burl = url.split("zippyshare.com")[0]
-    furl = burl + "zippyshare.com" + surl[1] + val + surl[-2]
-    return furl
 
 
 ####################################################
