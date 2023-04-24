@@ -560,20 +560,6 @@ def kolop_dl(url,kcrypt):
 
 
 #######################################################
-# anonfiles
-
-def anonfile(url):
-
-    headersList = { "Accept": "*/*"}
-    payload = ""
-
-    response = requests.request("GET", url, data=payload,  headers=headersList).text.split("\n")
-    for ele in response:
-        if "https://cdn" in ele and "anonfiles.com" in ele and url.split("/")[-2] in ele:
-            break
-
-    return ele.split('href="')[1].split('"')[0]
-
 
 ##########################################################
 # pixl
