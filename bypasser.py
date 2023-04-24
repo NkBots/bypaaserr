@@ -561,45 +561,7 @@ def kolop_dl(url,kcrypt):
 
 #######################################################
 
-##########################################################
-# pixl
 
-def pixl(url):
-    count = 1
-    dl_msg = ""
-    currentpage = 1
-    settotalimgs = True
-    totalimages = ""
-    client = cloudscraper.create_scraper(allow_brotli=False)
-    resp = client.get(url)
-    if resp.status_code == 404:
-        return "File not found/The link you entered is wrong!"
-    soup = BeautifulSoup(resp.content, "html.parser")
-    if "album" in url and settotalimgs:
-        totalimages = soup.find("span", {"data-text": "image-count"}).text
-        settotalimgs = False
-    thmbnailanch = soup.findAll(attrs={"class": "--media"})
-    links = soup.findAll(attrs={"data-pagination": "next"})
-    try:
-        url = links[0].attrs["href"]
-    except BaseException:
-        url = None
-    for ref in thmbnailanch:
-        imgdata = client.get(ref.attrs["href"])
-        if not imgdata.status_code == 200:
-            time.sleep(5)
-            continue
-        imghtml = BeautifulSoup(imgdata.text, "html.parser")
-        downloadanch = imghtml.find(attrs={"class": "btn-download"})
-        currentimg = downloadanch.attrs["href"]
-        currentimg = currentimg.replace(" ", "%20")
-        dl_msg += f"{count}. {currentimg}\n"
-        count += 1
-    currentpage += 1
-    fld_msg = f"Your provided Pixl.is link is of Folder and I've Found {count - 1} files in the folder.\n"
-    fld_link = f"\nFolder Link: {url}\n"
-    final_msg = fld_link + "\n" + fld_msg + "\n" + dl_msg
-    return final_msg
 
 
 ############################################################
