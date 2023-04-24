@@ -9,7 +9,7 @@ import threading
 from texts import HELP_TEXT
 from ddl import ddllist
 import re
-
+import bypasser
 
 # bot
 bot_token = os.environ.get("TOKEN", "6262139986:AAEcWGlRAhXVP76iUiklSZLoHkvybSFkD2Q")
